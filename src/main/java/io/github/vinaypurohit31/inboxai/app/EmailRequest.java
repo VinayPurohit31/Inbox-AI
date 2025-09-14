@@ -1,4 +1,4 @@
-package app;
+package io.github.vinaypurohit31.inboxai.app;
 
 import lombok.Data;
 
