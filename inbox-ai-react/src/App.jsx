@@ -1,6 +1,20 @@
 import { useState } from 'react';
 import './App.css';
-import { Box, Container, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Button, CircularProgress } from '@mui/material';
+import {
+  Box,
+  Container,
+  Typography,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+  CircularProgress,
+  Paper,
+  Divider
+} from '@mui/material';
+import axios from 'axios';
 
 function App() {
   const [emailContent, setEmailContent] = useState('');
@@ -10,103 +24,99 @@ function App() {
   const [error, setError] = useState('');
 
   const handeleSubmit = async () => {
-
+    setLoading(true);
+    setError('');
+    try {
+      const response = await axios.post("http://localhost:8080/api/email/generate", { emailContent, tone });
+      setGeneratedReply(typeof response.data === 'string' ? response.data : JSON.stringify(response.data));
+    } catch (error) {
+      setError('Failed to generate email reply. Please try again');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant='h3' component="h1" sx={{ mb: 3 }}>
-        Hello Welcome To Inbox-AI
-      </Typography>
+    <Container maxWidth="md" sx={{ py: 5 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{ mb: 4, fontWeight: 'bold', textAlign: 'center' }}
+        >
+          📧 Inbox-AI
+        </Typography>
 
-      <Box sx={{ mx: 3 }}>
-        <TextField
-          fullWidth
-          multiline
-          rows={6}
-          variant='outlined'
-          label="Original Email Content"
-          value={emailContent}
-          onChange={(e) => setEmailContent(e.target.value)}
-          sx={{ mb: 2 }}
-        />
+        <Box sx={{ mb: 3 }}>
+          <TextField
+            fullWidth
+            multiline
+            rows={6}
+            variant="outlined"
+            label="Original Email Content"
+            value={emailContent}
+            onChange={(e) => setEmailContent(e.target.value)}
+          />
+        </Box>
 
-        <FormControl fullWidth sx={{ mb: 2 }}>
+        <FormControl fullWidth sx={{ mb: 3 }}>
           <InputLabel>Tone (Optional)</InputLabel>
-          <Select value={tone || ''}
-            label={"tone (Optional)"}
-            onChange={(e) => setTone(e.target.value)}>
+          <Select
+            value={tone || ''}
+            label="Tone (Optional)"
+            onChange={(e) => setTone(e.target.value)}
+          >
             <MenuItem value=" ">None</MenuItem>
-            <MenuItem value="professional">Professionla</MenuItem>
+            <MenuItem value="professional">Professional</MenuItem>
             <MenuItem value="casual">Casual</MenuItem>
             <MenuItem value="friendly">Friendly</MenuItem>
           </Select>
         </FormControl>
 
         <Button
-          variant='contained'
+          variant="contained"
+          color="primary"
           onClick={handeleSubmit}
           disabled={!emailContent || loading}
           fullWidth
+          sx={{ py: 1.5, fontSize: '1rem', borderRadius: 2 }}
         >
-          {loading ? <CircularProgress size={24} /> : "Generate Reply"}
+          {loading ? <CircularProgress size={24} color="inherit" /> : "✨ Generate Reply"}
         </Button>
-      </Box>
 
-      {error && (
-        <Typography color='error' sx={{ mb: 2 }}>
-          {error}
-        </Typography>
-      )}
-      {/* {generatedReply && (
-        <Box sx={{ mt: 3 }}>
-          <Typography variant='h6' gutterBottom>
-            Generated Reply
+        {error && (
+          <Typography color="error" sx={{ mt: 2, textAlign: 'center' }}>
+            {error}
+          </Typography>
+        )}
+
+        {generatedReply && (
+          <Box sx={{ mt: 4 }}>
+            <Divider sx={{ mb: 3 }} />
+            <Typography variant="h6" gutterBottom>
+              Generated Reply
+            </Typography>
             <TextField
               fullWidth
               multiline
               rows={6}
-              variant='outlined'
-              label="Original Email Content"
+              variant="outlined"
               value={generatedReply}
               inputProps={{ readOnly: true }}
-            // sx={{ mb: 2 }}
             />
-            <Button variant='outlined'
+            <Button
+              variant="outlined"
               sx={{ mt: 2 }}
               onClick={() => navigator.clipboard.writeText(generatedReply)}
             >
-              Copy to Clipboard
+              📋 Copy to Clipboard
             </Button>
-          </Typography>
-        </Box>
-      )} */}
-
-      {generatedReply && (
-        <Box sx={{ mt: 3 }}>
-          <Typography variant='h6' gutterBottom>
-            Generated Reply
-          </Typography>
-          <TextField
-            fullWidth
-            multiline
-            rows={6}
-            variant='outlined'
-            label="Generated Reply"
-            value={generatedReply}
-            inputProps={{ readOnly: true }}
-          />
-          <Button
-            variant='outlined'
-            sx={{ mt: 2 }}
-            onClick={() => navigator.clipboard.writeText(generatedReply)}
-          >
-            Copy to Clipboard
-          </Button>
-        </Box>
-      )}
-
+          </Box>
+        )}
+      </Paper>
     </Container>
-  )
+  );
 }
 
 export default App;
