@@ -1,0 +1,38 @@
+{
+  "name": "Inbox-AI",
+  "description": "An AI email assistant, delivered as a Chrome Extension, to help users draft replies based on email context ",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "http://localhost:8080/*",
+    "*://mail.google.com/*"
+  ],
+  "content_scripts": [
+    {
+      "js": [
+        "content.js"
+      ],
+      "matches": [
+        "*://mail.google.com/*"
+      ],
+      "css": [
+        "content.css"
+      ]
+
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [ "icon/*" ],
+      "matches": [ "*://mail.google.com/*" ]
+    }
+  ],
+  "action": {
+    "default_tital": "Inbox-AI",
+    "default_icon": "icon.png"
+  }
+}
