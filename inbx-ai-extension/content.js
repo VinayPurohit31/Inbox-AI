@@ -1,1 +1,0 @@
-console.log("Inbox ai Extension - Content Script Loaded");
