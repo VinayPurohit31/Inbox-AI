@@ -1,6 +1,33 @@
 console.log("Inbox ai Extension - Content Script Loaded");
 
-function injectButton() { }
+
+function createAiButtobn(){
+
+}
+function findComposeToolBar(){
+
+}
+
+function injectButton() { 
+    const existingButton = document.querySelector('.ai-reply-button');
+    if(existingButton) existingButton.remove();
+
+    const toolbar = findComposeToolBar();
+
+    if(toolbar){
+        console.log("Toolbar not found");
+        return;
+    }
+    console.log("Toolbar Found, Creating AI Button");
+    const button = createAiButtobn();
+    button.childList.add('ai-reply-button');
+
+    button.addEventListener('click', async () =>{
+
+    })
+
+    toolbar.insertBefore(button, toolbar.firstChild);
+}
 
 const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
